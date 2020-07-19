@@ -13,9 +13,10 @@ const app = express();
 
 app.use(helmet());  // protect
 app.set('view engine',"pug");
+app.use("/uploads",express.static("uploads"));
 app.use(cookieParser());
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended : true}));
+app.use(bodyParser.urlencoded({extended : false}));
 app.use(morgan("dev")); // log
 app.use(locaslsMiddleware);
                 

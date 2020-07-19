@@ -1,18 +1,20 @@
-export const videos = [
-    {
-        id: 324393,
-        title:'Video awesome',
-        description:"this is something I love",
-        views:24,
-        videoFile:"https://archive.org/details/BigBuckBunny_124",
-        creater:{
-            id:121121,
-            name:"inkyu",
-            email:"inkyu0103@gmail.com",
+import mongoose from "mongoose";
+import dotenv from "dotenv";
+dotenv.config();
 
-        }
+mongoose.connect(
+    process.env.MONGO_URL,
+{
+    useUnifiedTopology: true,
+    useNewUrlParser:true,
+    useFindAndModify:false 
 
-    }
+});
 
+const db = mongoose.connection;
 
-];
+const handleOpen = () =>console.log("Connected to DB");
+const handleError = (err) =>console.log(`err on db : ${error}`);
+
+db.once("open",handleOpen);
+db.on("error",handleError);
