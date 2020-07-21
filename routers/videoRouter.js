@@ -11,10 +11,11 @@ videoRouter.get(routes.upload,getUpload);
 videoRouter.post(routes.upload, uploadVideo, postUpload);
 
 videoRouter.get(routes.videoDetail(),videoDetail);
-videoRouter.get(routes.editVideo(),getEditVideo);
-videoRouter.get(routes.editVideo(),postEditVideo);
 
-videoRouter.get(routes.deleteVideo,deleteVideo);
+videoRouter.get(routes.editVideo(),getEditVideo);
+videoRouter.post(routes.editVideo(),postEditVideo);
+
+videoRouter.get(routes.deleteVideo(),deleteVideo);
 
 
 
