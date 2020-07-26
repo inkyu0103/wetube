@@ -8,17 +8,35 @@ import videoRouter from "./routers/videoRouter";
 import globalRouter from "./routers/globalRouter";
 import routes from "./routes"
 import { locaslsMiddleware } from "./middlewares";
-  
+import passport from "passport";
+import session from "express-session";
+import "./passport";
+import dotenv from"dotenv";
+dotenv.config();
+
 const app = express();
+console.log(process.env.COOKIE_SECRET);
+
 
 app.use(helmet());  // protect
 app.set('view engine',"pug");
 app.use("/uploads",express.static("uploads"));
+app.use("/static",express.static("static"));
+
+
 app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended : false}));
 app.use(morgan("dev")); // log
+app.use(session({
+    secret : process.env.COOKIE_SECRET,
+    resave : true,
+    saveUninitialized : false
+}));
+app.use(passport.initialize());
+app.use(passport.session());
 app.use(locaslsMiddleware);
+
                 
 app.use(routes.home,globalRouter);
 app.use(routes.users,userRouter);

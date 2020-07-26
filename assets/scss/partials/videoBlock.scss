@@ -1,0 +1,14 @@
+.videoBlock , .video__player{
+  video {
+    margin-bottom: 10px;
+    max-width: 100%;
+    width: 100%;
+    overflow: hidden;
+  }
+  .videoBlock__title {
+    font-size: 18px;
+    font-weight: 400;
+    margin-bottom: 10px;
+    
+  }
+}
