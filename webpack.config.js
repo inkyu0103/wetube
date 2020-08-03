@@ -5,6 +5,9 @@ const ENTRY_FILE = path.resolve(__dirname,"assets","js","main.js");
 const OUTPUT_DIR = path.join(__dirname,"static");
 
 
+console.log(ENTRY_FILE);
+console.log(OUTPUT_DIR);
+
 const ExtractCSS = require("extract-text-webpack-plugin");
 const autoprefixer = require("autoprefixer");
 

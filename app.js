@@ -12,10 +12,13 @@ import passport from "passport";
 import session from "express-session";
 import "./passport";
 import dotenv from"dotenv";
+import MongoStore from "connect-mongo";
+import mongoose from "mongoose";
 dotenv.config();
 
 const app = express();
-console.log(process.env.COOKIE_SECRET);
+
+const CookieStore = MongoStore(session)
 
 
 app.use(helmet());  // protect
@@ -31,7 +34,8 @@ app.use(morgan("dev")); // log
 app.use(session({
     secret : process.env.COOKIE_SECRET,
     resave : true,
-    saveUninitialized : false
+    saveUninitialized : false,
+    store:new CookieStore({mongooseConnection : mongoose.connection})
 }));
 app.use(passport.initialize());
 app.use(passport.session());
@@ -41,6 +45,7 @@ app.use(locaslsMiddleware);
 app.use(routes.home,globalRouter);
 app.use(routes.users,userRouter);
 app.use(routes.videos,videoRouter)
+
 
 
 export default app;
