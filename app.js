@@ -6,6 +6,8 @@ import bodyParser from "body-parser";
 import userRouter from "./routers/userRouter"; // default로 import 하지 않을 경우 이렇게 import 한다. 
 import videoRouter from "./routers/videoRouter";
 import globalRouter from "./routers/globalRouter";
+import apiRouter from "./routers/apiRouter";
+
 import routes from "./routes"
 import { locaslsMiddleware } from "./middlewares";
 import passport from "passport";
@@ -44,7 +46,8 @@ app.use(locaslsMiddleware);
                 
 app.use(routes.home,globalRouter);
 app.use(routes.users,userRouter);
-app.use(routes.videos,videoRouter)
+app.use(routes.videos,videoRouter);
+app.use(routes.api,apiRouter);
 
 
 

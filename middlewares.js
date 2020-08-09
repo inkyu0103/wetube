@@ -21,7 +21,6 @@ export const onlyPublic =(req,res,next) =>{
 
 export const onlyPrivate = (req,res,next) =>{
     if (req.user){
-        console.log("onlyPrivate func : "+ req.user)
         next();
     }else{  
         res.redirect(routes.home);

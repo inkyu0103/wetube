@@ -41,6 +41,14 @@ const FB_CALLBACK = "/auth/facebook/callback";
 const TW = "/auth/twitter"
 const TW_CALLBACK = "/auth/twitter/callback";
 
+
+//API
+
+const API = "/api";
+const REGISTER_VIEW = "/:id/view";
+const ADD_COMMENT = "/:id/comment";
+const DELETE_COMMENT = "/:id/comment/delete"
+
 const routes = {
 
     home : HOME,
@@ -88,8 +96,12 @@ const routes = {
     facebook:FB,
     facebookCallback : FB_CALLBACK,
     twitter : TW,
-    twitterCallback : TW_CALLBACK
-    
+    twitterCallback : TW_CALLBACK,
+
+    api :API,
+    registerView : REGISTER_VIEW,
+    addComment : ADD_COMMENT,  
+    deleteComment : DELETE_COMMENT
 
 };
 

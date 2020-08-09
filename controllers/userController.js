@@ -8,6 +8,7 @@ export const getJoin = (req,res) => {
 }
 
 export const postJoin = async (req,res,next)=>{
+
     const{
         body :{name,email,password,password2}
     } = req;
@@ -23,15 +24,13 @@ export const postJoin = async (req,res,next)=>{
                 email
             });
             await User.register(user,password);
+            console.log("hi" +req.user);
             next();
         }catch(err){
             console.log(err);
             res.redirect(routes.home);
         }
     }
-
-
-
 }
 
 

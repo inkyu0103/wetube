@@ -1,5 +1,6 @@
 import routes from "../routes"
 import Video from "../models/Video";
+import Comment from "../models/Comment";
 
 
 export const home = async (req,res) => {
@@ -11,7 +12,6 @@ export const home = async (req,res) => {
         res.render("home",{pageTitle:"Home",videos:[]});
     }
 }
-
 
 
 export const search =  async(req,res) => {
@@ -59,15 +59,17 @@ export const getEditVideo = async(req,res) => {
         params:{id}
     } =req;
 
-
+    
     try{
         const video = await Video.findById(id);
-        if(video.creator !== req.user.id){
+        
+        if(String(video.creator)!== req.user.id){ // 이 조건을 못 만족 시키는데
             throw Error();    
         }else{
-        res.render("editVideo",{pageTitle:`Edit ${video.title}`,video});
+            res.render("editVideo",{pageTitle:`Edit ${video.title}`,video});
         }
     }catch(error){
+        console.log(error);
         res.redirect(routes.home);
     }
 
@@ -90,21 +92,17 @@ export const postEditVideo  = async(req,res) =>{
 
 }
 
-
-
-
 export const videoDetail = async(req,res) => {
-
     const{
         params :{id}
     } = req;
 
     try{
-        const video = await Video.findById(id).populate('creator');
+        const video = await Video.findById(id).populate('creator').populate("comment");
         res.render("videoDetail", {pageTitle:video.title,video});
 
-        console.log(video);
     }catch(err){
+        console.log(err);
         res.redirect(routes.home);
     }
     
@@ -115,21 +113,82 @@ export const deleteVideo = async(req,res) => {
     const {
         params : {id}
     } = req;
+    
 
     try{
-        if (video.creator !== req.user.id){
+        const video = await Video.findById(id);
+        if (String(video.creator) !== req.user.id){
             throw Error();
         }else{
             await Video.findOneAndRemove({_id:id});
+            res.redirect(routes.home);
         }
     }catch(err){
         console.log(err);
         res.redirect(routes.home);
     }
         
-    
+}
+
+export const postRegisterView = async(req,res) =>{
+    const {
+        params : {id}
+    } = req;
+    try{
+        const video = await Video.findById(id)
+        video.views += 1;
+        video.save();
+        res.status(200);
+    }catch(err){
+        res.status(400);
+        res.end();
+    }finally{
+        res.end();
+    }
+}
+
+
+// Add Comment
+export const postAddComment = async (req, res) => {
+  const {
+    params: { id },
+    body: { comment },
+    user
+  } = req;
+
+  console.log(user.id);
+  try {
+    const video = await Video.findById(id);
+    const newComment = await Comment.create({
+      text: comment,
+      creator: user.id
+    });
+    video.comments.push(newComment.id);
+    res.send({commentId : newComment.id});
+    console.log( `새 댓글의 아이디는${newComment.id}`);
+    video.save();
+  } catch (error) {
+    console.log(error);
+    res.status(400);
+  } finally {
+    res.end();
+  }
+};
+
+// video를 찾는다 --> comment.id가 있나본데... 이걸 어떻게 찾지.
+export const deleteComment = async(req,res) =>{
+    const {
+        params : { id }
+    } = req;
+
+    console.log(`delete에서 받은 아이디는 ${id}입니다 ^^`);
+    //비디오를 찾는다.
+    const video = await Video.findById(id);
+    //비디오에 있는 commentList를 확인한다.
+    const commentList = video.comments;
+    // 내가 뭘 쓰는지 어떻게 알아요!!! ㅇ아아ㅏ아악!!!
+    console.log(req.user)
+    console.log(commentList);
 
     
-
-
 }
