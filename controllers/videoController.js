@@ -165,7 +165,6 @@ export const postAddComment = async (req, res) => {
     });
     video.comments.push(newComment.id);
     res.send({commentId : newComment.id});
-    console.log( `새 댓글의 아이디는${newComment.id}`);
     video.save();
   } catch (error) {
     console.log(error);
@@ -176,16 +175,20 @@ export const postAddComment = async (req, res) => {
 };
 
 // video를 찾는다 --> comment.id가 있나본데... 이걸 어떻게 찾지.
+// requset에서 넘어온 정보는 params에 있다.
 export const deleteComment = async(req,res) =>{
     const {
-        params : { id }
+        params : { id },
+        body : {commentId}
     } = req;
 
     console.log(`delete에서 받은 아이디는 ${id}입니다 ^^`);
-    //비디오를 찾는다.
-    const video = await Video.findById(id);
+    //비디오를 찾는다. // 음 Comment에서 지우면 사라지나?
+    const comment = await Comment.findByIdAndDelete(commentId);
     //비디오에 있는 commentList를 확인한다.
-    const commentList = video.comments;
+
+    video.comments = commentList;
+    video.save();
     // 내가 뭘 쓰는지 어떻게 알아요!!! ㅇ아아ㅏ아악!!!
     console.log(req.user)
     console.log(commentList);

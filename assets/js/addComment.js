@@ -1,25 +1,38 @@
 import axios from "axios";
-import { deleteComment } from "../../controllers/videoController";
 const addCommentForm = document.getElementById("jsAddComment");
 const commentList = document.getElementById("jsCommentList");
 const commentNumber = document.getElementById("jsCommentNumber");
 const commentValue  = commentList.querySelectorAll("li");
 
 
-let commentDeleteBtn;
-let deleteObj; 
+//문제점 id도 저장이 안되고 / 댓글 내용도 저장이 안된다.
 
-// handle submit -- > sendComment --> addComment 
-// handle touchComment -->sendDeletecomment -->deleteComment
 
-// event target의 버튼에게 또 리스너를 달아준다고...?
-const touchComment = (event) => {
-  commentDeleteBtn = event.target.querySelector("input");
-  commentDeleteBtn.addEventListener("click",sendDeleteComment);
+// UI 에서만 없어지게
+const deleteComment = async (event) => {
+  
+  const input = event.target;
+  const  li= input.parentNode;
+  const videoId = window.location.href.split("/videos/")[1];
+
+
+  const response = await axios({
+    url : `/api/${videoId}/comment/delete`,
+    method : "POST",
+    data : {
+      commentId : li.id
+    }
+  }).then((res)=>{
+    console.log(res);
+  })
+  
+  
+  event.preventDefault();
+  commentList.removeChild(li);
+  decreaseNumber();
 }
 
 
-// Control comments number
 
 const decreaseNumber = () =>{
   commentNumber.innerHTML = parseInt(commentNumber.innerHTML,10) -1;
@@ -40,42 +53,27 @@ const handleSubmit = event => {
   commentInput.value = "";
 };
 
-//last
-const deletecomment = event =>{
-  event.preventDefault();
-  deleteObj = event.target.parentNode.parentNode; 
-  commentList.removeChild(deleteObj);
-  decreaseNumber();
-}
 
-
-const addComment = (comment) =>{
+const addComment = (comment,commentId) =>{
   const li = document.createElement("li");
   const span = document.createElement("span");
+  const input = document.createElement("input");
+
+  input.type = "submit"
+  input.value = "X"
   span.innerHTML = comment;
   li.appendChild(span);
+  li.appendChild(input);
+  li.id = commentId;
   commentList.prepend(li);
+  console.log(comment);
+
+  input.addEventListener("click",deleteComment);
   increaseNumber();
 }
 
 
 // router에 보낸다. // 유저를 찾아서 
-const sendDeleteComment = async(req,res) =>{
-  const videoId = window.location.href.split("/videos/")[1];
-  const response = await axios({
-    url: `/api/${videoId}/comment/delete`,
-    method: "POST",
-    });
-
-    if (response === 200){
-      console.log("사용자 확인 완료");
-
-      deletecomment();
-    }
-}
-
-
-
 
 const sendComment = async(comment) => {
     const videoId = window.location.href.split("/videos/")[1];
@@ -88,16 +86,19 @@ const sendComment = async(comment) => {
         },
       })
       .then((res)=>{
-        if (res.status === 200){
+        const {
+          data : {commentId},
+          status
+        } =res;
+        if (status === 200){
           console.log("응답에 성공했어요!")
-          addComment(comment);
+          console.log(commentId);
+          addComment(comment,commentId)
         }        
       });
 
   };
   
-
-
 
 
 function init() {
@@ -110,7 +111,7 @@ if (addCommentForm) {
 
 function other(){
   commentValue.forEach((element)=>{
-    element.addEventListener("mouseenter",touchComment);
+    element.addEventListener("click",deleteComment);
   });
 
 }
