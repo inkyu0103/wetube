@@ -98,8 +98,8 @@ export const videoDetail = async(req,res) => {
     } = req;
 
     try{
-        const video = await Video.findById(id).populate('creator').populate("comment");
-        res.render("videoDetail", {pageTitle:video.title,video});
+        const video = await Video.findById(id).populate('creator').populate("comments");
+        res.render("videoDetail", {pageTitle:video.title, video});
 
     }catch(err){
         console.log(err);
@@ -176,22 +176,29 @@ export const postAddComment = async (req, res) => {
 
 // video를 찾는다 --> comment.id가 있나본데... 이걸 어떻게 찾지.
 // requset에서 넘어온 정보는 params에 있다.
+// 문제는 새로고침을 하면 다 날아가 버린다.
 export const deleteComment = async(req,res) =>{
-    const {
-        params : { id },
-        body : {commentId}
-    } = req;
+    try{
+        const {
+            params : { id }, // video id를 의미
+            body : {commentId}
+        } = req;
+        //비디오를 찾는다. // 음 Comment에서 지우면 사라지나?
+        //이게 되면 딱히 client에서 video를 보낼 필요가 없다. --> 수정해야하는 대상.
 
-    console.log(`delete에서 받은 아이디는 ${id}입니다 ^^`);
-    //비디오를 찾는다. // 음 Comment에서 지우면 사라지나?
-    const comment = await Comment.findByIdAndDelete(commentId);
-    //비디오에 있는 commentList를 확인한다.
-
-    video.comments = commentList;
-    video.save();
+        await Comment.findByIdAndRemove(commentId);
+        const video = await Video.findByIdAndUpdate(id);
+        const newVideoComments = video.comments.filter((item)=>{
+            return item !== commentId; 
+        })
+        video.save();
+    }catch(err){
+        console.log(err);
+        res.status(400);
+    }finally{
+        res.end();
+    }
+    // DB에서 작동 확인
     // 내가 뭘 쓰는지 어떻게 알아요!!! ㅇ아아ㅏ아악!!!
-    console.log(req.user)
-    console.log(commentList);
-
-    
+    //이게 내생각에는 comment를 지워도 실제로 video의comments에 남아서 그런게 아닐까 싶어요.
 }
